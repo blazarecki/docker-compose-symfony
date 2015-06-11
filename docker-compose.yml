@@ -1,0 +1,35 @@
+data:
+  image: busybox
+  volumes:
+    - ./:/data
+
+web:
+  build: docker/nginx
+  volumes_from: [data]
+  links:
+    - fpm
+  ports:
+    - "80:80"
+
+fpm:
+  build: docker/php-fpm
+  volumes_from: [data]
+  links:
+    - db
+  environment:
+    - SYMFONY_ENV=dev
+
+db:
+  image: mysql:5.6
+  volumes_from: [data]
+  environment:
+    - MYSQL_ROOT_PASSWORD=root
+    - MYSQL_DATABASE=symfony
+  ports:
+    - "3306:3306"
+
+tools:
+  build: docker/tools
+  volumes_from: [data]
+  links:
+    - db
