@@ -1,7 +1,7 @@
 data:
   image: busybox
   volumes:
-    - ./:/data
+    - code:/srv
 
 web:
   build: docker/nginx
