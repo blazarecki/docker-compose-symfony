@@ -25,7 +25,7 @@ db:
   volumes_from: [data]
   environment:
     - MYSQL_ROOT_PASSWORD=root
-    - MYSQL_DATABASE=symfony_dev
+    - MYSQL_DATABASE=mcommoto
   ports:
     - "3306:3306"
 
@@ -40,5 +40,19 @@ tools:
   environment:
     - SYMFONY_ENV=dev
   links:
+    - web
     - db
     - elasticsearch
+    - seleniumhub:selenium
+
+seleniumhub:
+  image: selenium/hub
+
+seleniumnode:
+  image: selenium/node-firefox-debug
+  # image: selenium/node-firefox
+  # image: selenium/node-chrome-debug
+  # image: selenium/node-chrome
+  links:
+    - seleniumhub:hub
+    - web
