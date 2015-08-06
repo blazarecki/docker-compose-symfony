@@ -1,7 +1,7 @@
 data:
   image: busybox
   volumes:
-    - code:/srv
+    - ../code:/srv
 
 web:
   build: docker/nginx
@@ -16,6 +16,7 @@ fpm:
   volumes_from: [data]
   links:
     - db
+    - elasticsearch
   environment:
     - SYMFONY_ENV=dev
 
@@ -24,12 +25,34 @@ db:
   volumes_from: [data]
   environment:
     - MYSQL_ROOT_PASSWORD=root
-    - MYSQL_DATABASE=symfony
+    - MYSQL_DATABASE=mcommoto
   ports:
     - "3306:3306"
+
+elasticsearch:
+    image: elasticsearch:1.6
+    ports:
+      - "9200:9200"
 
 tools:
   build: docker/tools
   volumes_from: [data]
+  environment:
+    - SYMFONY_ENV=dev
   links:
+    - web
     - db
+    - elasticsearch
+    - seleniumhub:selenium
+
+seleniumhub:
+  image: selenium/hub
+
+seleniumnode:
+  image: selenium/node-firefox-debug
+  # image: selenium/node-firefox
+  # image: selenium/node-chrome-debug
+  # image: selenium/node-chrome
+  links:
+    - seleniumhub:hub
+    - web
